@@ -45,7 +45,7 @@ public class GamePanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             //gameOver = true;
             System.out.println("Time is over");
-            gameTimer.stop();
+            //gameTimer.stop();
             findWinner();
         }
     });
@@ -168,7 +168,6 @@ public class GamePanel extends JPanel {
         int y = 0;
         for (int i = 0; i < cardList.size(); i++) {
             cardList.get(i).render(g, 100 + x * 170, y * 160);
-            
             x++;
             if (x == cols) {
                 x = 0;
@@ -177,9 +176,15 @@ public class GamePanel extends JPanel {
         }
 
         // CHANGE HERE
-        if (computer.isPlaying() && !gameOver) {
-            matchedList.add(computer.play());
-            System.out.println("Computer playing");
+        if (computer.isPlaying() && gameTimer.isRunning()) {
+
+            Card c = null;
+            do {
+                c = computer.play();
+            } while(!c.isFlipped() || c.isFound());
+            
+            matchedList.add(c);
+            c.setFlipped(false);
         }
         if (matchedList.size() == 2 && !gameOver) {
 
@@ -195,8 +200,13 @@ public class GamePanel extends JPanel {
                 } else if (computer.isPlaying()) {
                     strB.append("Computer ").append(" didn't find a pair");
                 }
+                
+                if (player.isPlaying()) {
+                    c1.setFlipped(true);
+                    c2.setFlipped(true);                    
+                }
 
-                System.out.println("PICTURES DON'T MATCH!!!!");
+                //System.out.println("PICTURES DON'T MATCH!!!!");
                 timer.start();
 
             } else {    // Βρέθηκε ζευγάρι
@@ -217,7 +227,7 @@ public class GamePanel extends JPanel {
 
                 findWinner();
             }
-
+            
 
             if (gameTimer.isRunning()) {
                 int rounds = User.getRounds();
@@ -276,18 +286,18 @@ public class GamePanel extends JPanel {
         // Σύνολο ζευγαριών που μπορούν να γίνουν(6 για Easy, 10 για Normal, 18 για Hard)
         if (numberOfMatches == (rows * cols) / 2 || !gameTimer.isRunning()) {
             gameOver = true;
-            //gameTimer.stop();
+            gameTimer.stop();
             strB.append(("\nGame is over!")).append("\nFinal score: ").append(player.getScore()).append(", ").append(computer.getScore());
             if (computer.getScore() > player.getScore()) {
                 computer.setWinner();
-                System.out.println("Computer has won");
+                //System.out.println("Computer has won");
                 JOptionPane.showMessageDialog(null, "Computer has won!", "Winner", JOptionPane.INFORMATION_MESSAGE);
             } else if (computer.getScore() < player.getScore()) {
                 player.setWinner();
-                System.out.println("Player has won");
+                //System.out.println("Player has won");
                 JOptionPane.showMessageDialog(null, "Player " + player.getUsername() + " has won!", "Winner",  JOptionPane.INFORMATION_MESSAGE);
             } else {
-                System.out.println("It's a DRAW!");
+                //System.out.println("It's a DRAW!");
                 JOptionPane.showMessageDialog(null, "It's a DRAW!", "Winner", JOptionPane.INFORMATION_MESSAGE);
             }
         }
